@@ -1,0 +1,28 @@
+hdfs dfs -help	Displays a list of available HDFS commands and their usage.
+hdfs dfs -ls <path>	Lists files and directories in the specified path.
+hdfs dfs -mkdir <path>	Creates a new directory at the specified path.
+hdfs dfs -ls -r <path>	Recursively lists files and directories under the specified path.
+hdfs dfs -get <src> <dest>	Copies files or directories from HDFS to the local filesystem.
+hdfs dfs -put <src> <dest>	Uploads files or directories from the local filesystem to HDFS.
+hdfs dfs -cat <path>	Displays the contents of a file at the specified path.
+hdfs dfs -tail <path>	Displays the last few bytes of a file at the specified path.
+hdfs dfs -rm <path>	Removes (deletes) files or directories at the specified path.
+
+// Using -put and -get commands to move a file to and from local system and hdfs, then deleting the file from hdfs using -rm
+
+hdfs dfs -put src(D:\a.txt /mydir)
+hdfs dfs -ls /mydir
+
+hdfs dfs -cat /mydir/a.txt
+hdfs dfs -get /mydir/a.txt D:\temp\
+
+dir D:\temp\
+ Volume in drive D is Data
+ Volume Serial Number is 40A8-1731
+
+ Directory of D:\temp
+
+hdfs dfs -rm /mydir/a.txt
+Deleted /mydir/a.txt
+
+hdfs dfs -ls /mydir
