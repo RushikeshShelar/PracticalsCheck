@@ -1,0 +1,316 @@
+// MAP REDUCE
+def map_function(document):
+    # Split the document into words
+    words = document.split()
+    # Emit each word as a key with value 1
+    return [(word, 1) for word in words]
+
+def shuffle_function(mapped_data):
+    # Create a dictionary to group words together
+    shuffle_dict = {}
+    for word, count in mapped_data:
+        if word in shuffle_dict:
+            shuffle_dict[word].append(count)
+        else:
+            shuffle_dict[word] = [count]
+    return shuffle_dict
+
+def reduce_function(shuffled_data):
+    # Reduce the grouped data to count occurrences of each word
+    reduced_data = {}
+    for word, counts in shuffled_data.items():
+        reduced_data[word] = sum(counts)
+    return reduced_data
+
+def mapreduce_word_count(documents):
+    # Step 1: Map
+    mapped_data = []
+    for document in documents:
+        mapped_data.extend(map_function(document))
+    # Step 2: Shuffle
+    shuffled_data = shuffle_function(mapped_data)
+    # Step 3: Reduce
+    reduced_data = reduce_function(shuffled_data)
+    return reduced_data
+
+if __name__ == "__main__":
+    # Sample input data
+    documents = [
+        "Hello Amaan",
+        "MapReduce",
+        "Amaan is good",
+        "Hello world again"
+    ]
+    # Perform MapReduce Word Count
+    word_count = mapreduce_word_count(documents)
+    # Display the word count results
+    for word, count in word_count.items():
+        print(f"{word}: {count}")
+
+//
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import java.io.IOException;
+import java.util.StringTokenizer;
+
+public class WordCount {
+
+  public static class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
+    private final static IntWritable one = new IntWritable(1);
+    private Text word = new Text();
+
+    @Override
+    protected void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+      String line = value.toString();
+      StringTokenizer itr = new StringTokenizer(line);
+      while (itr.hasMoreTokens()) {
+        word.set(itr.nextToken());
+        context.write(word, one);
+      }
+    }
+  }
+
+  public static class IntSumReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+    private IntWritable result = new IntWritable();
+
+    @Override
+    protected void reduce(Text key, Iterable<IntWritable> values, Context context)
+        throws IOException, InterruptedException {
+      int sum = 0;
+      for (IntWritable val : values) {
+        sum += val.get();
+      }
+      result.set(sum);
+      context.write(key, result);
+    }
+  }
+
+  public static void main(String args[]) throws Exception {
+    Configuration conf = new Configuration();
+    Job job = Job.getInstance(conf, "word count");
+    job.setJarByClass(WordCount.class);
+    job.setMapperClass(TokenizerMapper.class);
+    job.setReducerClass(IntSumReducer.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(IntWritable.class);
+    FileInputFormat.addInputPath(job, new Path(args[0]));
+    FileOutputFormat.setOutputPath(job, new Path(args[1]));
+    System.exit(job.waitForCompletion(true) ? 0 : 1);
+  }
+}
+
+
+
+
+// FLAJOT MArtin
+
+def printTable(input, hash, binHash, trailingZeros): 
+    print('\nCalculation\t\tHash\tBinary\tTrailing Zeros')
+    print('-----------\t\t----\t------\t--------------')
+    for i in range(len(input)):
+        print(f'(3*({input[i]})+1) mod 5', end='\t\t')
+        print(hash[i], end='\t')
+        print(binHash[i], end='\t\t')
+        print(trailingZeros[i], end='\n')
+def flajoletMartinAlgorithm(input):
+    hash = [(((3*x)+1)%5) for x in input]
+    binHash =  [format(x, '03b') for x in hash]
+    trailingZeros = [( len(x) - ( len(x.rstrip('0')) if len(x.rstrip('0'))!=0 else len(x) ) ) for x in binHash]
+    printTable(input, hash, binHash, trailingZeros)
+    maxZeros = max(trailingZeros)
+    return 2 ** maxZeros
+
+input = [int(i) for i in input('\nInput Stream: ').split()]
+print('\nEstimated number of Distint Elements:', flajoletMartinAlgorithm(input))
+
+
+//
+stream=[1,4,2,1,5,2,3,4,3,1,1,3,1]
+
+def hash_value(x):
+    # h(x)=3x+2 mod 5
+    y= ((3 * x) + 2) % 5
+    
+    return y
+    
+def convert_bin(hash_val):
+    return bin(hash_val)[2:]
+    
+def trailing_zeros(hash_val):
+    return(len(hash_val)-len(hash_val.rstrip('0')))
+    
+def FM(stream):
+    max_zeros=0
+    
+    for value in stream :
+        hash_val=hash_value(value)
+        
+        bin_val=convert_bin(hash_val)
+        
+        trail_zero=trailing_zeros(bin_val)
+        max_zeros = max(trail_zero,max_zeros)
+        
+    return 2 ** max_zeros
+    
+print(FM(stream))
+
+// HADOOP COMMANDS
+
+hdfs dfs -help	Displays a list of available HDFS commands and their usage.
+hdfs dfs -ls <path>	Lists files and directories in the specified path.
+hdfs dfs -mkdir <path>	Creates a new directory at the specified path.
+hdfs dfs -ls -r <path>	Recursively lists files and directories under the specified path.
+hdfs dfs -get <src> <dest>	Copies files or directories from HDFS to the local filesystem.
+hdfs dfs -put <src> <dest>	Uploads files or directories from the local filesystem to HDFS.
+hdfs dfs -cat <path>	Displays the contents of a file at the specified path.
+hdfs dfs -tail <path>	Displays the last few bytes of a file at the specified path.
+hdfs dfs -rm <path>	Removes (deletes) files or directories at the specified path.
+
+// Using -put and -get commands to move a file to and from local system and hdfs, then deleting the file from hdfs using -rm
+
+hdfs dfs -put src(D:\a.txt /mydir)
+hdfs dfs -ls /mydir
+
+hdfs dfs -cat /mydir/a.txt
+hdfs dfs -get /mydir/a.txt D:\temp\
+
+dir D:\temp\
+ Volume in drive D is Data
+ Volume Serial Number is 40A8-1731
+
+ Directory of D:\temp
+
+hdfs dfs -rm /mydir/a.txt
+Deleted /mydir/a.txt
+
+hdfs dfs -ls /mydir
+
+// mongo db cmmd
+
+show dbs	Lists all the databases available on the MongoDB server.
+use <database_name>	Switches to the specified database; creates it if it doesn't exist.
+show collections	Lists all the collections in the current database.
+db.<collection>.insertOne({...})	Inserts a single document into the specified collection.
+db.<collection>.find()	Retrieves all documents from the specified collection.
+db.<collection>.find({key: value})	Retrieves documents that match the specified query.
+db.<collection>.updateOne({...})	Updates a single document in the collection based on a query.
+db.<collection>.deleteOne({...})	Deletes a single document from the collection based on a query.
+db.<collection>.countDocuments()	Returns the number of documents in the specified collection.
+db.<collection>.createIndex({...})	Creates an index on the specified field(s) to improve query performance.
+db.<collection>.drop()	Deletes the specified collection and all its documents.
+db.dropDatabase()	Deletes the current database.
+exit	Exits the MongoDB shell (mongosh).
+
+
+// DGMI Algo
+
+import math
+
+class DGIM:
+    def __init__(self, window_size):
+        self.window_size = window_size
+        self.buckets = []
+    
+    def add_bit(self, bit, timestamp):
+        if bit == 1:
+            self.buckets.insert(0, (timestamp, 1))
+            self._merge_buckets()
+        self._expire_old_buckets(timestamp)
+
+    def _merge_buckets(self):
+        i = 0
+        while i < len(self.buckets) - 2:
+            if self.buckets[i][1] == self.buckets[i+1][1] == self.buckets[i+2][1]:
+                new_bucket = (self.buckets[i+1][0], self.buckets[i+1][1] * 2)
+                del self.buckets[i+1:i+3]
+                self.buckets.insert(i+1, new_bucket)
+            else:
+                i += 1
+
+    def _expire_old_buckets(self, current_time):
+        while self.buckets and self.buckets[-1][0] <= current_time - self.window_size:
+            self.buckets.pop()
+
+    def count_ones(self, current_time):
+        total = 0
+        for i, (timestamp, size) in enumerate(self.buckets):
+            if timestamp <= current_time - self.window_size:
+                break
+            if i == len(self.buckets) - 1:
+                total += size // 2
+            else:
+                total += size
+        return total
+
+    def display_buckets(self):
+        print("Final Buckets (timestamp, size):", self.buckets)
+
+
+window_size = 24
+dgim = DGIM(window_size)
+stream = [1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0]
+
+for t, bit in enumerate(stream):
+    dgim.add_bit(bit, t)
+
+ones_count = dgim.count_ones(len(stream) - 1)
+print(f"\nAt the last bit, number of 1's in the last {window_size} bits: {ones_count}")
+dgim.display_buckets()
+
+
+// r programming
+	One-Time Queries
+# Loading a dataset
+data <- mtcars
+
+# One-time query to get the mean of the 'mpg' column
+mean_mpg <- mean(data$mpg)
+print(mean_mpg)
+
+// linear regression
+library(ggplot2)
+age <- c(20, 21, 22, 23, 24)
+height <- c(5.5, 5.6, 5.7, 5.9, 6.0)
+data <- data.frame(age, height)
+linear_model <- lm(height ~ age, data = data)
+summary(linear_model)
+ggplot(data, aes(x = age, y = height)) +
+  geom_point() +  # Add points
+  geom_smooth(method = "lm", col = "blue") +  # Add regression line
+  labs(title = "Linear Regression: Height vs Age", x = "Age", y = "Height")
+
+
+//Multiple regression
+age <- c(20, 21, 22, 23, 24)
+height <- c(5.5, 5.6, 5.7, 5.9, 6.0)
+weight <- c(130, 135, 140, 145, 150)
+data <- data.frame(age, height, weight)
+multiple_model <- lm(weight ~ age + height, data = data)
+summary(multiple_model)
+ggplot(data, aes(x = age, y = weight, color = height)) +
+  geom_point(size = 3) +  # Add points
+  stat_smooth(method = "lm", se = FALSE) +  # Add regression line
+  labs(title = "Multiple Regression: Weight vs Age and Height", x = "Age", y = "Weight") +
+  scale_color_gradient(low = "blue", high = "red")  # Color gradient based on height
+
+//Logistic regression
+study_hours <- c(1, 2, 3, 4, 5, 6)
+pass_exam <- c(0, 0, 0, 1, 1, 1)  # 0 = Fail, 1 = Pass
+
+data <- data.frame(study_hours, pass_exam)
+logistic_model <- glm(pass_exam ~ study_hours, data = data, family = binomial)
+summary(logistic_model)
+new_data <- data.frame(study_hours = seq(1, 6, 0.1))
+new_data$predicted_prob <- predict(logistic_model, newdata = new_data, type = "response")
+ggplot(data, aes(x = study_hours, y = pass_exam)) +
+  geom_point(size = 3) +  # Add points
+  geom_line(data = new_data, aes(y = predicted_prob), color = "blue") +  # Add regression line
+  labs(title = "Logistic Regression: Probability of Passing vs Study Hours", x = "Study Hours", y = "Probability of Passing") +
+  ylim(-0.1, 1.1)  # Set y-axis limits
