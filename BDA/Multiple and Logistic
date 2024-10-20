@@ -1,0 +1,48 @@
+One-Time Queries
+# Loading a dataset
+data <- mtcars
+
+# One-time query to get the mean of the 'mpg' column
+mean_mpg <- mean(data$mpg)
+print(mean_mpg)
+
+// linear regression
+library(ggplot2)
+age <- c(20, 21, 22, 23, 24)
+height <- c(5.5, 5.6, 5.7, 5.9, 6.0)
+data <- data.frame(age, height)
+linear_model <- lm(height ~ age, data = data)
+summary(linear_model)
+ggplot(data, aes(x = age, y = height)) +
+  geom_point() +  # Add points
+  geom_smooth(method = "lm", col = "blue") +  # Add regression line
+  labs(title = "Linear Regression: Height vs Age", x = "Age", y = "Height")
+
+
+//Multiple regression
+age <- c(20, 21, 22, 23, 24)
+height <- c(5.5, 5.6, 5.7, 5.9, 6.0)
+weight <- c(130, 135, 140, 145, 150)
+data <- data.frame(age, height, weight)
+multiple_model <- lm(weight ~ age + height, data = data)
+summary(multiple_model)
+ggplot(data, aes(x = age, y = weight, color = height)) +
+  geom_point(size = 3) +  # Add points
+  stat_smooth(method = "lm", se = FALSE) +  # Add regression line
+  labs(title = "Multiple Regression: Weight vs Age and Height", x = "Age", y = "Weight") +
+  scale_color_gradient(low = "blue", high = "red")  # Color gradient based on height
+
+//Logistic regression
+study_hours <- c(1, 2, 3, 4, 5, 6)
+pass_exam <- c(0, 0, 0, 1, 1, 1)  # 0 = Fail, 1 = Pass
+
+data <- data.frame(study_hours, pass_exam)
+logistic_model <- glm(pass_exam ~ study_hours, data = data, family = binomial)
+summary(logistic_model)
+new_data <- data.frame(study_hours = seq(1, 6, 0.1))
+new_data$predicted_prob <- predict(logistic_model, newdata = new_data, type = "response")
+ggplot(data, aes(x = study_hours, y = pass_exam)) +
+  geom_point(size = 3) +  # Add points
+  geom_line(data = new_data, aes(y = predicted_prob), color = "blue") +  # Add regression line
+  labs(title = "Logistic Regression: Probability of Passing vs Study Hours", x = "Study Hours", y = "Probability of Passing") +
+  ylim(-0.1, 1.1)  # Set y-axis limits
