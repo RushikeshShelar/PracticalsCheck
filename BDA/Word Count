@@ -1,0 +1,29 @@
+def map_function(document):
+    for word in document.split():
+        yield (word.lower(), 1)  
+
+def reduce_function(word, counts):
+    return (word, sum(counts)) 
+
+documents = []
+num_docs = int(input("Enter the number of documents: ")) 
+for _ in range(num_docs):
+    doc = input("Enter document text: ")  
+    documents.append(doc)
+
+mapped = []
+for doc in documents:
+    mapped.extend(map_function(doc))
+
+from collections import defaultdict
+
+shuffled = defaultdict(list)
+for word, count in mapped:
+    shuffled[word].append(count)
+
+reduced = []
+for word, counts in shuffled.items():
+    reduced.append(reduce_function(word, counts))
+
+for word, count in reduced:
+    print(f"{word}: {count}")
