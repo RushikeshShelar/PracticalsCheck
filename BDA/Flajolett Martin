@@ -1,0 +1,28 @@
+stream=[1,4,2,1,5,2,3,4,3,1,1,3,1]
+
+def hash_value(x):
+    # h(x)=3x+2 mod 5
+    y= ((3 * x) + 2) % 5
+    
+    return y
+    
+def convert_bin(hash_val):
+    return bin(hash_val)[2:]
+    
+def trailing_zeros(hash_val):
+    return(len(hash_val)-len(hash_val.rstrip('0')))
+    
+def FM(stream):
+    max_zeros=0
+    
+    for value in stream :
+        hash_val=hash_value(value)
+        
+        bin_val=convert_bin(hash_val)
+        
+        trail_zero=trailing_zeros(bin_val)
+        max_zeros = max(trail_zero,max_zeros)
+        
+    return 2 ** max_zeros
+    
+print(FM(stream))
