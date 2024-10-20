@@ -1,0 +1,19 @@
+One-Time Queries
+# Loading a dataset
+data <- mtcars
+
+# One-time query to get the mean of the 'mpg' column
+mean_mpg <- mean(data$mpg)
+print(mean_mpg)
+
+// linear regression
+library(ggplot2)
+age <- c(20, 21, 22, 23, 24)
+height <- c(5.5, 5.6, 5.7, 5.9, 6.0)
+data <- data.frame(age, height)
+linear_model <- lm(height ~ age, data = data)
+summary(linear_model)
+ggplot(data, aes(x = age, y = height)) +
+  geom_point() +  # Add points
+  geom_smooth(method = "lm", col = "blue") +  # Add regression line
+  labs(title = "Linear Regression: Height vs Age", x = "Age", y = "Height")
