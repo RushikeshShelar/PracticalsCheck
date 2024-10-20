@@ -1,0 +1,27 @@
+mongo db cmmd
+
+show dbs	Lists all the databases available on the MongoDB server.
+
+use <database_name>	Switches to the specified database; creates it if it doesn't exist.
+
+show collections	Lists all the collections in the current database.
+
+db.<collection>.insertOne({...})	Inserts a single document into the specified collection.
+
+db.<collection>.find()	Retrieves all documents from the specified collection.
+
+db.<collection>.find({key: value})	Retrieves documents that match the specified query.
+
+db.<collection>.updateOne({...})	Updates a single document in the collection based on a query.
+
+db.<collection>.deleteOne({...})	Deletes a single document from the collection based on a query.
+
+db.<collection>.countDocuments()	Returns the number of documents in the specified collection.
+
+db.<collection>.createIndex({...})	Creates an index on the specified field(s) to improve query performance.
+
+db.<collection>.drop()	Deletes the specified collection and all its documents.
+
+db.dropDatabase()	Deletes the current database.
+
+exit	Exits the MongoDB shell (mongosh).
